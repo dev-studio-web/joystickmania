@@ -80,7 +80,7 @@
             <div class="flex items-center justify-between h-20">
                 
                 <!-- Brand Logo & Name -->
-                <a href="#" class="flex items-center gap-3 group">                    
+                <a href="#" class="flex items-center gap-3 group">                
            <div class="relative w-14 h-14 bg-gradient-to-br from-brand-magenta via-purple-600 to-brand-accent rounded-xl p-0.5 shadow-lg group-hover:scale-105 transition-transform duration-300">
             <div class="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center overflow-hidden">
                 <img src="img/other.svg" alt="Joystick Mania" class="w-full h-full object-cover">
@@ -258,164 +258,160 @@
     <script>
        const PHONE_NUMBER = "584247433758";
 
-// 1. La base de datos inicia vacía para llenarse con Google Sheets
-let products = []; 
+       // 1. Base de datos
+       let products = []; 
 
-// 2.  ENLACE CSV
-const urlGoogleSheet = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxVkc79evHNqDqCssVcG1b8nvFh0dZiFibOIFCx-Cr3Qjg5Yo5GVteijSCbWDg1B_PrbOH302b3jYN/pub?output=csv'; 
+       // 2. Enlace CSV
+       const urlGoogleSheet = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxVkc79evHNqDqCssVcG1b8nvFh0dZiFibOIFCx-Cr3Qjg5Yo5GVteijSCbWDg1B_PrbOH302b3jYN/pub?output=csv'; 
 
-// 3. Motor de sincronización
-async function cargarInventario() {
-    try {
-        const respuesta = await fetch(urlGoogleSheet);
-        const datosCSV = await respuesta.text();
-        const lineas = datosCSV.split('\n');
-        
-        for (let i = 1; i < lineas.length; i++) {
-            const fila = lineas[i].trim();
-            if (fila === '') continue;
+       // 3. Motor de sincronización
+       async function cargarInventario() {
+           try {
+               const respuesta = await fetch(urlGoogleSheet);
+               const datosCSV = await respuesta.text();
+               const lineas = datosCSV.split('\n');
+               
+               for (let i = 1; i < lineas.length; i++) {
+                   const fila = lineas[i].trim();
+                   if (fila === '') continue;
 
-            const matchRegex = fila.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            const columnas = matchRegex.map(col => col.replace(/(^"|"$)/g, '').trim());
+                   const matchRegex = fila.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                   const columnas = matchRegex.map(col => col.replace(/(^"|"$)/g, '').trim());
 
-            // Limpiamos el nombre del archivo de imagen que viene de Sheets
-            let nombreImagen = columnas[7] ? columnas[7].trim() : 'default.jpg';
+                   products.push({
+                       id: parseInt(columnas[0]) || i,
+                       name: columnas[1] || 'Producto sin nombre',
+                       category: (columnas[2] || 'todos').toLowerCase(),
+                       price: columnas[3] || '$0.00',
+                       badge: columnas[4] || '',
+                       stock: columnas[5] || 'Consultar',
+                       specs: columnas[6] ? columnas[6].split('|').map(s => s.trim()) : [],
+                       image: `img/${columnas[7] || 'default.jpg'}`
+                   });
+               }
+               
+               renderProducts(products);
 
-            products.push({
-                id: parseInt(columnas[0]) || i,
-                name: columnas[1] || 'Producto sin nombre',
-                category: (columnas[2] || 'todos').toLowerCase(),
-                price: columnas[3] || '$0.00',
-                badge: columnas[4] || '',
-                stock: columnas[5] || 'Consultar',
-                specs: columnas[6] ? columnas[6].split('|').map(s => s.trim()) : [],
-                // Aquí enlazamos automáticamente con la carpeta img/ de tu repositorio
-                image: `img/${columnas[7]}`
-            });
-        
-        renderProducts(products);
+           } catch (error) {
+               console.error("Error al cargar el inventario:", error);
+           }
+       }
 
-  } catch (error) {
-        console.error("Error al cargar el inventario:", error);
-    }
-}
-cargarInventario();
+       function renderProducts(items) {
+           const grid = document.getElementById('product-grid');
+           const noResults = document.getElementById('no-results');
 
-function renderProducts(items) {
-    const grid = document.getElementById('product-grid');
-    const noResults = document.getElementById('no-results');
+           grid.innerHTML = '';
 
-    grid.innerHTML = '';
+           if (items.length === 0) {
+               noResults.classList.remove('hidden');
+               return;
+           } else {
+               noResults.classList.add('hidden');
+           }
 
-    if (items.length === 0) {
-        noResults.classList.remove('hidden');
-        return;
-    } else {
-        noResults.classList.add('hidden');
-    }
+           items.forEach(product => {
+               const rawMessage = `Hola Joystick Mania! 🎮 Vengo de la vitrina web y quiero solicitar el siguiente producto:\n\n🕹️ *Producto:* ${product.name}\n💰 *Precio:* ${product.price}\n\n¿Tienen disponibilidad para coordinar la compra?`;
+               const encodedMessage = encodeURIComponent(rawMessage);
+               const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`;
 
-    items.forEach(product => {
-        const rawMessage = `Hola Joystick Mania! 🎮 Vengo de la vitrina web y quiero solicitar el siguiente producto:\n\n🕹️ *Producto:* ${product.name}\n💰 *Precio:* ${product.price}\n\n¿Tienen disponibilidad para coordinar la compra?`;
-        const encodedMessage = encodeURIComponent(rawMessage);
-        const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`;
+               const card = document.createElement('div');
+               card.className = "bg-brand-card border border-brand-cardBorder rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 glow-card group";
 
-        const card = document.createElement('div');
-        card.className = "bg-brand-card border border-brand-cardBorder rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 glow-card group";
+               card.innerHTML = `
+                   <div>
+                       <div class="relative h-52 bg-slate-900 overflow-hidden flex items-center justify-center">
+                           <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                           <div class="absolute inset-0 bg-gradient-to-t from-brand-card via-transparent to-transparent opacity-80"></div>
+                           
+                           <div class="absolute top-3 left-3 flex flex-wrap gap-1">
+                               <span class="bg-brand-magenta text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                                   ${product.badge}
+                               </span>
+                           </div>
 
-        card.innerHTML = `
-            <div>
-                <div class="relative h-52 bg-slate-900 overflow-hidden flex items-center justify-center">
-                    <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-brand-card via-transparent to-transparent opacity-80"></div>
-                    
-                    <div class="absolute top-3 left-3 flex flex-wrap gap-1">
-                        <span class="bg-brand-magenta text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                            ${product.badge}
-                        </span>
-                    </div>
+                           <span class="absolute bottom-3 right-3 text-[11px] font-semibold px-2 py-0.5 rounded-md backdrop-blur-md ${product.stock === 'En Stock' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
+                               ${product.stock}
+                           </span>
+                       </div>
 
-                    <span class="absolute bottom-3 right-3 text-[11px] font-semibold px-2 py-0.5 rounded-md backdrop-blur-md ${product.stock === 'En Stock' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
-                        ${product.stock}
-                    </span>
-                </div>
+                       <div class="p-5">
+                           <h3 class="font-bold text-white text-base leading-snug mb-2 group-hover:text-pink-300 transition-colors">
+                               ${product.name}
+                           </h3>
 
-                <div class="p-5">
-                    <h3 class="font-bold text-white text-base leading-snug mb-2 group-hover:text-pink-300 transition-colors">
-                        ${product.name}
-                    </h3>
+                           <div class="flex flex-wrap gap-1.5 mb-4">
+                               ${product.specs.map(spec => `<span class="bg-purple-950/60 text-purple-200 text-[11px] px-2 py-0.5 rounded border border-purple-800/30"><i class="fa-solid fa-check text-[9px] text-brand-magenta mr-1"></i>${spec}</span>`).join('')}
+                           </div>
+                       </div>
+                   </div>
 
-                    <div class="flex flex-wrap gap-1.5 mb-4">
-                        ${product.specs.map(spec => `<span class="bg-purple-950/60 text-purple-200 text-[11px] px-2 py-0.5 rounded border border-purple-800/30"><i class="fa-solid fa-check text-[9px] text-brand-magenta mr-1"></i>${spec}</span>`).join('')}
-                    </div>
-                </div>
-            </div>
+                   <div class="p-5 pt-0 border-t border-purple-900/20 mt-auto">
+                       <div class="flex items-baseline justify-between my-3">
+                           <span class="text-xs text-slate-400 font-medium">Precio final:</span>
+                           <span class="text-2xl font-black text-white bg-gradient-to-r from-white to-pink-200 bg-clip-text">
+                               ${product.price}
+                           </span>
+                       </div>
 
-            <div class="p-5 pt-0 border-t border-purple-900/20 mt-auto">
-                <div class="flex items-baseline justify-between my-3">
-                    <span class="text-xs text-slate-400 font-medium">Precio final:</span>
-                    <span class="text-2xl font-black text-white bg-gradient-to-r from-white to-pink-200 bg-clip-text">
-                        ${product.price}
-                    </span>
-                </div>
+                       <a href="${waUrl}" target="_blank" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/40 transition-all duration-300 active:scale-95">
+                           <i class="fa-brands fa-whatsapp text-xl"></i>
+                           <span>Pedir por WhatsApp</span>
+                       </a>
+                   </div>
+               `;
 
-                <a href="${waUrl}" target="_blank" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/40 transition-all duration-300 active:scale-95">
-                    <i class="fa-brands fa-whatsapp text-xl"></i>
-                    <span>Pedir por WhatsApp</span>
-                </a>
-            </div>
-        `;
+               grid.appendChild(card);
+           });
+       }
 
-        grid.appendChild(card);
-    });
-}
+       // 5. Iniciar la aplicación
+       cargarInventario();
 
-// 5. Llamamos al inicio del programa
-cargarInventario();
+       // --- LÓGICA DE FILTROS ---
+       const categoryBtns = document.querySelectorAll('.category-btn');
+       let currentCategory = 'todos';
+       let currentSearch = '';
 
-// --- LÓGICA DE FILTROS INTACTA ---
-const categoryBtns = document.querySelectorAll('.category-btn');
-let currentCategory = 'todos';
-let currentSearch = '';
+       function filterProducts() {
+           let filtered = products;
 
-function filterProducts() {
-    let filtered = products;
+           if (currentCategory !== 'todos') {
+               filtered = filtered.filter(p => p.category === currentCategory);
+           }
 
-    if (currentCategory !== 'todos') {
-        filtered = filtered.filter(p => p.category === currentCategory);
-    }
+           if (currentSearch.trim() !== '') {
+               const query = currentSearch.toLowerCase();
+               filtered = filtered.filter(p => 
+                   p.name.toLowerCase().includes(query) || 
+                   p.category.toLowerCase().includes(query) ||
+                   p.specs.some(s => s.toLowerCase().includes(query))
+               );
+           }
 
-    if (currentSearch.trim() !== '') {
-        const query = currentSearch.toLowerCase();
-        filtered = filtered.filter(p => 
-            p.name.toLowerCase().includes(query) || 
-            p.category.toLowerCase().includes(query) ||
-            p.specs.some(s => s.toLowerCase().includes(query))
-        );
-    }
+           renderProducts(filtered);
+       }
 
-    renderProducts(filtered);
-}
+       categoryBtns.forEach(btn => {
+           btn.addEventListener('click', () => {
+               categoryBtns.forEach(b => {
+                   b.classList.remove('bg-brand-magenta', 'text-white', 'shadow-lg', 'shadow-brand-magenta/30');
+                   b.classList.add('bg-brand-card', 'text-slate-300', 'border', 'border-brand-cardBorder');
+               }); 
 
-categoryBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        categoryBtns.forEach(b => {
-            b.classList.remove('bg-brand-magenta', 'text-white', 'shadow-lg', 'shadow-brand-magenta/30');
-            b.classList.add('bg-brand-card', 'text-slate-300', 'border', 'border-brand-cardBorder');
-        }); 
+               btn.classList.remove('bg-brand-card', 'text-slate-300', 'border', 'border-brand-cardBorder');
+               btn.classList.add('bg-brand-magenta', 'text-white', 'shadow-lg', 'shadow-brand-magenta/30');
 
-        btn.classList.remove('bg-brand-card', 'text-slate-300', 'border', 'border-brand-cardBorder');
-        btn.classList.add('bg-brand-magenta', 'text-white', 'shadow-lg', 'shadow-brand-magenta/30');
+               currentCategory = btn.getAttribute('data-category');
+               filterProducts();
+           });
+       });
 
-        currentCategory = btn.getAttribute('data-category');
-        filterProducts();
-    });
-});
-
-const searchInput = document.getElementById('search-input');
-searchInput.addEventListener('input', (e) => {
-    currentSearch = e.target.value;
-    filterProducts();
-});
+       const searchInput = document.getElementById('search-input');
+       searchInput.addEventListener('input', (e) => {
+           currentSearch = e.target.value;
+           filterProducts();
+       });
     </script>
 </body>
 </html>
