@@ -312,9 +312,10 @@
            }
 
            items.forEach(product => {
-               const rawMessage = `Hola Joystick Mania! 🎮 Vengo de la vitrina web y quiero solicitar el siguiente producto:\n\n🕹️ *Producto:* ${product.name}\n💰 *Precio:* ${product.price}\n\n¿Tienen disponibilidad para coordinar la compra?`;
-               const encodedMessage = encodeURIComponent(rawMessage);
-               const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`;
+    // Unicode escapes: \u{1F3AE} = 🎮 | \u25C6 = ◆
+    const rawMessage = `Hola Joystick Mania! \u{1F3AE} Vengo de la vitrina web y quiero solicitar el siguiente producto:\n\n\u25C6 *Producto:* ${product.name}\n\u25C6 *Precio:* ${product.price}\n\n¿Tienen disponibilidad para coordinar la compra?`;
+    const encodedMessage = encodeURIComponent(rawMessage);
+    const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`;
 
                const card = document.createElement('div');
                card.className = "bg-brand-card border border-brand-cardBorder rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 glow-card group";
