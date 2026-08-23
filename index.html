@@ -311,8 +311,8 @@
                noResults.classList.add('hidden');
            }
 
-    items.forEach(product => {
-    const rawMessage = `Hola Joystick Mania! \u{1F3AE} Vengo de la vitrina web y quiero solicitar el siguiente producto:\n\n\u25C6 *Producto:* ${product.name}\n\u25C6 *Precio:* ${product.price}\n\n¿Tienen disponibilidad para coordinar la compra?`;
+ items.forEach(product => {
+    const rawMessage = `Hola Joystick Mania! \uD83C\uDFAE Vengo de la vitrina web y quiero solicitar el siguiente producto:\n\n\u25C6 *Producto:* ${product.name}\n\u25C6 *Precio:* ${product.price}\n\n¿Tienen disponibilidad para coordinar la compra?`;
     const encodedMessage = encodeURIComponent(rawMessage);
     const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`;
 
