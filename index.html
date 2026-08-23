@@ -290,26 +290,16 @@ async function cargarInventario() {
                 stock: columnas[5] || 'Consultar',
                 specs: columnas[6] ? columnas[6].split('|').map(s => s.trim()) : [],
                 // Aquí enlazamos automáticamente con la carpeta img/ de tu repositorio
-                image: `img/${nombreImagen}`
+                image: `img/${columnas[7]}`
             });
-        }
-
+        
         renderProducts(products);
 
-    } catch (error) {
+  } catch (error) {
         console.error("Error al cargar el inventario:", error);
     }
 }
-            });
-        }
-
-        // 4. Se ejecuta la función gráfica SOLO cuando ya tenemos los datos
-        renderProducts(products);
-
-    } catch (error) {
-        console.error("Error al cargar el inventario:", error);
-    }
-}
+cargarInventario();
 
 function renderProducts(items) {
     const grid = document.getElementById('product-grid');
