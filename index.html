@@ -275,19 +275,31 @@ async function cargarInventario() {
             const fila = lineas[i].trim();
             if (fila === '') continue;
 
-            // Lector CSV avanzado: separa por comas pero protege las comillas
             const matchRegex = fila.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             const columnas = matchRegex.map(col => col.replace(/(^"|"$)/g, '').trim());
 
+            // Limpiamos el nombre del archivo de imagen que viene de Sheets
+            let nombreImagen = columnas[7] ? columnas[7].trim() : 'default.jpg';
+
             products.push({
                 id: parseInt(columnas[0]) || i,
-                name: columnas[1],
-                category: columnas[2].toLowerCase(), // Asegura que los filtros funcionen
-                price: columnas[3],
-                badge: columnas[4],
-                stock: columnas[5],
+                name: columnas[1] || 'Producto sin nombre',
+                category: (columnas[2] || 'todos').toLowerCase(),
+                price: columnas[3] || '$0.00',
+                badge: columnas[4] || '',
+                stock: columnas[5] || 'Consultar',
                 specs: columnas[6] ? columnas[6].split('|').map(s => s.trim()) : [],
-                image: columnas[7]
+                // Aquí enlazamos automáticamente con la carpeta img/ de tu repositorio
+                image: `img/${nombreImagen}`
+            });
+        }
+
+        renderProducts(products);
+
+    } catch (error) {
+        console.error("Error al cargar el inventario:", error);
+    }
+}
             });
         }
 
