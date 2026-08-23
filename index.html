@@ -79,18 +79,24 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 
-            <!-- Brand Logo & Name -->
+           <!-- Brand Logo & Name -->
 <a href="#" class="flex items-center gap-3 group">                
     <div class="relative w-14 h-14 bg-gradient-to-br from-brand-magenta via-purple-600 to-brand-accent rounded-xl p-0.5 shadow-lg group-hover:scale-105 transition-transform duration-300">
-        <div class="w-full h-full bg-brand-dark rounded-[10px] flex flex-col items-center justify-center overflow-hidden border border-brand-magenta/30 shadow-inner">
-            <!-- Icono vectorial pro nítido y legible -->
-            <i class="fa-solid fa-gamepad text-brand-magenta text-2xl group-hover:rotate-12 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(230,0,103,0.6)]"></i>
-            <div class="flex gap-0.5 text-[7px] text-pink-300 font-bold mt-0.5 tracking-tighter">
-                <span>&#9633;</span><span>&#9675;</span><span>&#9651;</span><span>&#10005;</span>
-            </div>
+        <div class="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center overflow-hidden relative">
+            <!-- Forzamos el zoom y centrado para eliminar el margen en blanco del SVG -->
+            <img src="img/other.svg" alt="Joystick Mania" class="absolute w-[220%] h-[220%] max-w-none object-contain scale-110" style="image-rendering: -webkit-optimize-contrast;">
         </div>
     </div> 
     <div>
+        <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-pink-100 to-brand-magenta bg-clip-text text-transparent">
+            Joystick<span class="text-brand-magenta">Mania</span>
+        </span>
+        <div class="flex items-center gap-1.5 text-[10px] text-purple-300 font-semibold tracking-wider uppercase">
+            <span>&#9633;</span><span>&#9675;</span><span>&#9651;</span><span>&#10005;</span>
+            <span class="ml-1 text-slate-400">Gaming Store</span>
+        </div>
+    </div>
+</a>
         <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-pink-100 to-brand-magenta bg-clip-text text-transparent">
             Joystick<span class="text-brand-magenta">Mania</span>
         </span>
